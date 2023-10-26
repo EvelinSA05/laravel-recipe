@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('image');
             $table->string('ingredients');
             $table->string('step');
+            $table->string('namaakun');
             $table->timestamps();
         });
     }

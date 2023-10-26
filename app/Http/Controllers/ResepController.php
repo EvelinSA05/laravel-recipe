@@ -6,6 +6,10 @@ use App\Models\Resep;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
+use App\Http\Requests\ResepStoreRequest;
+use App\Http\Resources\PostResource;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class ResepController extends Controller
 {
@@ -38,57 +42,58 @@ class ResepController extends Controller
      */
     public function store(Request $request)
     {
+        // $request->validate([
+        //     // 'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        //     'title' => 'required|string|max:255',
+        //     'ingredients' => 'required|string',
+        //     'step' => 'required|string',
+        //     'namaakun' => 'required|string',
+        // ]);
 
-        // $data = new Resep();
-        // $image = $request->file('image')->getClientOriginalName();
-        // $request->file('image')->move('foto/' . $image);
+        // if ($request->file('image')) {
+        //     $image = $request->file('image');
+        //     $imageName = time() . '.' . $image->getClientOriginalExtension();
+        //     $image->move(public_path('images'), $imageName);
+        // }
 
-        // $data->title = $request->input('title');
-        // $data->image = url('foto/' . $image);
-        // $data->ingredients = $request->input('ingredients');
-        // $data->step = $request->input('step');
-        // $data->save();
-        // echo "Data berhasil ditambahkan!";
+        // $imageData = new Resep();
+        // $imageData->title = $request->input('title');
+        // $imageData->step = $request->input('step');
+        // $imageData->ingredients = $request->input('ingredients');
+        // $imageData->namaakun = $request->input('namaakun');
+        // $imageData->image = $imageName;
+        // $imageData->save();
 
-        // return response()->json($data);
+        // return response()->json(['reseps' => $imageData], 201);
 
-        $request->validate([
-            'title'=>'required|max:255',
-            'image'=>'required|image|max:5040',
-            'ingredients'=>'required|max:255',
-            'step'=>'required|max:255'
+        //define validation rules
+        $validator = Validator::make($request->all(), [
+            'image'     => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'title'     => 'required',
+            'ingredients'   => 'required',
+            'step' => 'required',
+            'namaakun' => 'required',
         ]);
 
-        $gambar = $request->image;
-        $slug = Str::slug($gambar->getClientOriginalName());
-        $new_gambar = time().'_'.$slug;
-        $gambar->move('', $new_gambar);
+        //check if validation fails
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
 
-        $resep = new Resep;
-        $resep->title = $request->title;
-        $resep->image = ''.$new_gambar;
-        $resep->ingredients = $request->ingredients;
-        $resep->step = $request->step;
-        $resep->save();
+        //upload image
+        $image = $request->file('image');
+        $image->storeAs('public/posts', $image->hashName());
 
-         return response()->json(['reseps' => $resep], 201);
+        //create post
+        $resep = Resep::create([
+            'image'     => $image->hashName(),
+            'title'     => $request->title,
+            'ingredients'   => $request->ingredients,
+            'step'   => $request->step,
+            'namaakun'   => $request->namaakun,
+        ]);
 
-        // $reseps = Reseps::create([
-        //     'title' => $request->input('title'),
-        //     'image' => $request->input('image'),
-        //     'ingredients' => $request->input('ingredients'),
-        //     'step' => $request->input('step'),
-        //     // tambahkan kolom lain sesuai kebutuhan
-        // ]);
-
-        // return response()->json(['reseps' => $reseps], 201);
-
-        // $response = Http::post('http://127.0.0.1:8000/api/reseps', [
-        //     'title' => $request->input('title'),
-        //     'image' => $request->input('image'),
-        //     'ingredients' => $request->input('ingredients'),
-        //     'step' => $request->input('step'),
-        // ]);
+        return response()->json(['reseps' => $resep], 201);
     }
 
     /**
