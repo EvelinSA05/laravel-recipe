@@ -72,9 +72,15 @@ class HistoryController extends Controller
      * @param  \App\Models\History  $history
      * @return \Illuminate\Http\Response
      */
-    public function show(History $history)
+    public function show(History $history, $id)
     {
-        //
+        $history = History::find($id);
+
+        if (!$history) {
+            return response()->json(['message' => 'Item not found'], 404);
+        }
+
+        return response()->json($history, 200);
     }
 
     /**

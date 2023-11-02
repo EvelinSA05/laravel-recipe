@@ -24,6 +24,32 @@ class ResepController extends Controller
         return response()->json($data);
     }
 
+    public function remove($id)
+    {
+        // Temukan resep berdasarkan ID
+        $recipe = Resep::find($id);
+
+        if (!$recipe) {
+            return response()->json(['message' => 'Resep tidak ditemukan'], 404);
+        }
+
+        // Hapus tanda bookmark
+        $recipe->is_bookmarked = false;
+        $recipe->save();
+
+        return response()->json(['message' => 'Tanda bookmark dihapus']);
+    }
+
+    public function search(Request $request)
+    {
+        $keyword = $request->input('query');
+
+        $reseps = Resep::where('title', 'like', "%$keyword%")
+            ->get();
+
+        return response()->json(['reseps' => $reseps]);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -42,30 +68,6 @@ class ResepController extends Controller
      */
     public function store(Request $request)
     {
-        // $request->validate([
-        //     // 'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        //     'title' => 'required|string|max:255',
-        //     'ingredients' => 'required|string',
-        //     'step' => 'required|string',
-        //     'namaakun' => 'required|string',
-        // ]);
-
-        // if ($request->file('image')) {
-        //     $image = $request->file('image');
-        //     $imageName = time() . '.' . $image->getClientOriginalExtension();
-        //     $image->move(public_path('images'), $imageName);
-        // }
-
-        // $imageData = new Resep();
-        // $imageData->title = $request->input('title');
-        // $imageData->step = $request->input('step');
-        // $imageData->ingredients = $request->input('ingredients');
-        // $imageData->namaakun = $request->input('namaakun');
-        // $imageData->image = $imageName;
-        // $imageData->save();
-
-        // return response()->json(['reseps' => $imageData], 201);
-
         //define validation rules
         $validator = Validator::make($request->all(), [
             'image'     => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -113,6 +115,26 @@ class ResepController extends Controller
         return response()->json($resep, 200);
     }
 
+    public function bookmark($id)
+    {
+        // Menandai atau melepas tanda resep sebagai bookmark
+        $resep = Resep::findOrFail($id);
+        $resep->is_bookmarked = !$resep->is_bookmarked;
+        $resep->save();
+
+        return response()->json(['message' => 'Status bookmark diubah']);
+    }
+
+    public function approve($id)
+    {
+        // Menandai atau melepas tanda resep sebagai bookmark
+        $resep = Resep::findOrFail($id);
+        $resep->approve = !$resep->approve;
+        $resep->save();
+
+        return response()->json(['message' => 'Status approve diubah']);
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -133,94 +155,50 @@ class ResepController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // $reseps=Reseps::find($id);
-        // $reseps->update($request->all());
-        // return $reseps;
-
-        // $request->validate([
-        //     'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048'  // Example validation for image
-        // ]);
-
-        // // Handle file upload
-        // if ($request->hasFile('image')) {
-        //     $imagePath = $request->file('image')->store('foto');  // Store the image in the 'images' directory
-        //     // Update image information in the database (you'll need to implement this)
-        //     // ...
-        //     return response()->json(['message' => 'Image updated successfully']);
-        // }
-
-        // return response()->json(['message' => 'No image uploaded'], 400);
-
-        // $image = Reseps::find($id);
-
-        // if (!$image) {
-        //     return response()->json(['message' => 'Image not found'], 404);
-        // }
-
-        // // Validasi request
-        // $request->validate([
-        //     'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
-        // ]);
-
-        // // Handle file upload
-        // if ($request->hasFile('image')) {
-        //     $data = $request->file('image')->store('foto');
-        //     // Update path gambar di database
-        //     $image->image = $data;
-        //     $image->save();
-
-        //     return response()->json(['message' => 'Image updated successfully']);
-        // }
-
-        // return response()->json(['message' => 'No image uploaded'], 400);
-
-        // Cari gambar berdasarkan ID
-
-        $image = Resep::find($id);
-
-        if (!$image) {
-            return response()->json(['message' => 'Image not found'], 404);
-        }
-
-        // Validasi request
-        $request->validate([
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'title' => 'string',
-            'ingredients' => 'string',
-            'step' => 'string',
+        //define validation rules
+        $validator = Validator::make($request->all(), [
+            'title'     => 'required',
+            'ingredients'     => 'required',
+            'step'     => 'required',
         ]);
 
-        // Handle file upload
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('foto');
-            $image->image = $imagePath;
+        //check if validation fails
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
         }
 
-        $image->title = $request->input('title', $image->title);
-        $image->ingredients = $request->input('ingredients', $image->ingredients);
-        $image->step = $request->input('step', $image->step);
+        //find post by ID
+        $post = Resep::find($id);
 
-        // Simpan perubahan
-        $image->save();
+        //check if image is not empty
+        if ($request->hasFile('image')) {
 
-        return response()->json(['message' => 'Image and data updated successfully']);
+            //upload image
+            $image = $request->file('image');
+            $image->storeAs('public/posts', $image->hashName());
 
+            //delete old image
+            Storage::delete('public/posts/' . basename($post->image));
 
-        // $reseps = Reseps::find($id);
+            //update post with new image
+            $post->update([
+                'image'     => $image->hashName(),
+                'title'     => $request->title,
+                'ingredients'     => $request->ingredients,
+                'step'     => $request->step,
+            ]);
+        } else {
 
-        // if (!$reseps) {
-        //     return response()->json(['message' => 'User not found'], 404);
-        // }
+            //update post without image
+            $post->update([
+                'title'     => $request->title,
+                'ingredients'     => $request->ingredients,
+                'step'     => $request->step,
+            ]);
+        }
 
-        // $reseps->update([
-        //     'title' => $request->input('title'),
-        //     'image' => $request->input('image'),
-        //     'ingredients' => $request->input('ingredients'),
-        //     'step' => $request->input('step'),
-        //     // tambahkan kolom lain sesuai kebutuhan
-        // ]);
-
-        // return response()->json(['message' => 'User updated successfully', 'reseps' => $reseps], 200);
+        //return response
+        return response()->json(['message' => 'Image and data updated successfully', $post]);
     }
 
     /**

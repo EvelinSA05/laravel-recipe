@@ -15,10 +15,9 @@ return new class extends Migration
     {
         Schema::create('admins', function (Blueprint $table) {
             $table->id();
-            $table->string('akunadmin');
+            $table->string('name');
             $table->string('password');
             $table->string('email');
-            $table->integer('telp');
             $table->timestamps();
         });
     }

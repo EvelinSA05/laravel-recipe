@@ -2,115 +2,57 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Admin;
 use Illuminate\Http\Request;
+use App\Models\Admin;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Passport\HasApiTokens;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
         $data = admin::all();
         return response()->json($data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function register(Request $request)
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $admin = Admin::create([
-            'akunadmin' => $request->input('akunadmin'),
-            'password' => $request->input('password'),
-            'email' => $request->input('email'),
-            'telp' => $request->input('telp'),
-            // tambahkan kolom lain sesuai kebutuhan
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:admins',
+            'password' => 'required|min:6',
         ]);
 
-        return response()->json(['admin' => $admin], 201);
+        $admin = new Admin;
+        $admin->name = $request->name;
+        $admin->email = $request->email;
+        $admin->password = Hash::make($request->password);
+        $admin->save();
+
+        return response()->json(['message' => 'Admin registered successfully']);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Admin  $admin
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Admin $admin)
+    public function login(Request $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Admin  $admin
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Admin $admin)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Admin  $admin
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        $admin = Admin::find($id);
-
-        if (!$admin) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-
-        $admin->update([
-            'akunadmin' => $request->input('akunadmin'),
-            'password' => $request->input('password'),
-            'email' => $request->input('email'),
-            'telp' => $request->input('telp'),
-            // tambahkan kolom lain sesuai kebutuhan
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
 
-        return response()->json(['message' => 'User updated successfully', 'admin' => $admin], 200);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Admin  $admin
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        $admin = Admin::find($id);
-
-        if (!$admin) {
-            return response()->json(['message' => 'User not found'], 404);
+        if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
+            return response()->json(['message' => 'Admin login successful']);
         }
 
-        $admin->delete();
+        // return response()->json(['error' => 'Invalid login credentials'], 401);
+        return response()->json(['name' => $request->name, 'message' => 'Admin login successful']);
+    }
 
-        return response()->json(['message' => 'User deleted successfully'], 200);
+    public function logout()
+    {
+        Auth::guard('admin')->logout();
+        return response()->json(['message' => 'Admin logout successful']);
     }
 }
