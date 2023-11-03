@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('step');
             $table->string('namaakun');
             $table->boolean('is_bookmarked')->default(false);
-            $table->boolean('approve')->default(false);
+            $table->boolean('is_approve')->default(false);
             $table->timestamps();
         });
     }

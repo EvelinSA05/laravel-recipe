@@ -129,7 +129,7 @@ class ResepController extends Controller
     {
         // Menandai atau melepas tanda resep sebagai bookmark
         $resep = Resep::findOrFail($id);
-        $resep->approve = !$resep->approve;
+        $resep->is_approve = !$resep->is_approve;
         $resep->save();
 
         return response()->json(['message' => 'Status approve diubah']);

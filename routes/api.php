@@ -35,6 +35,7 @@ Route::post('/reseps/{id}', [ResepController::class, 'update']);
 Route::post('/reseps/{id}/bookmark', [ResepController::class, 'bookmark']);
 Route::get('/reseps/{id}/bookmark', [ResepController::class, 'bookmark']);
 Route::delete('/reseps/{id}/bookmark', [ResepController::class, 'remove']);
+
 Route::post('/reseps/{id}/approve', [ResepController::class, 'approve']);
 Route::get('/reseps/{id}/approve', [ResepController::class, 'approve']);
 Route::delete('/reseps/{id}/approve', [ResepController::class, 'remove']);
@@ -75,6 +76,7 @@ Route::get('/admin', [AdminController::class, 'index']);
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
 // Route::middleware('auth:api')->get('/admin', function (Request $request) {
 //     return $request->user();
 // });
