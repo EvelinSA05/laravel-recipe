@@ -15,8 +15,13 @@ class Resep extends Model
         'image',
         'ingredients',
         'step',
-        'namaakun'
+        'name'
     ];
+
+    // public function user()
+    // {
+    //     return $this->belongsTo(User::class);
+    // }
 
     protected function image(): Attribute
     {

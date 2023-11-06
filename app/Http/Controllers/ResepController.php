@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Resep;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Http;
-use App\Http\Requests\ResepStoreRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Resources\PostResource;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\ResepStoreRequest;
 use Illuminate\Support\Facades\Validator;
 
 class ResepController extends Controller
@@ -22,6 +23,21 @@ class ResepController extends Controller
     {
         $data = resep::all();
         return response()->json($data);
+
+        // ->join('users'.id '=' 'reseps'.'name')
+        // join('users'.id_user '=' 'reseps'.'username')
+
+        // $data = DB::table('reseps')
+        // ->join('users', 'users.name', '=', 'reseps.name')
+        // ->select('reseps.*', 'users.name')
+        // ->get();
+        // return response()->json($data);
+
+        // $data = DB::table('reseps')
+        // ->join('users', 'users.name', "=", 'reseps.username')
+        // // ->select('reseps.*', 'users.name')
+        // ->get();
+        //  return response()->json($data);
     }
 
     public function remove($id)
@@ -68,13 +84,15 @@ class ResepController extends Controller
      */
     public function store(Request $request)
     {
+
+        $user = auth()->user();
         //define validation rules
         $validator = Validator::make($request->all(), [
             'image'     => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'title'     => 'required',
             'ingredients'   => 'required',
             'step' => 'required',
-            'namaakun' => 'required',
+            'name' => 'required',
         ]);
 
         //check if validation fails
@@ -92,7 +110,7 @@ class ResepController extends Controller
             'title'     => $request->title,
             'ingredients'   => $request->ingredients,
             'step'   => $request->step,
-            'namaakun'   => $request->namaakun,
+            'name'   => $request->name,    
         ]);
 
         return response()->json(['reseps' => $resep], 201);

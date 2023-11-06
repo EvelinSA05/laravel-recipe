@@ -19,7 +19,9 @@ return new class extends Migration
             $table->string('image');
             $table->string('ingredients');
             $table->string('step');
-            $table->string('namaakun');
+            $table->string('name');
+            // $table->unsignedBigInteger('name'); // Kolom untuk asosiasi dengan pengguna
+            // $table->foreign('name')->references('id')->on('users');
             $table->boolean('is_bookmarked')->default(false);
             $table->boolean('is_approve')->default(false);
             $table->timestamps();

@@ -19,9 +19,10 @@ class RegisterController extends Controller
     {
         //set validation
         $validator = Validator::make($request->all(), [
-            'email'     => 'required|email|unique:users',
             'name'      => 'required',
-            'password'  => 'required|min:8|confirmed'
+            'email'     => 'required|email|unique:users',
+            'password'  => 'required|min:8|confirmed',
+            'role'  => 'required'
         ]);
 
         //if validation fails
@@ -31,10 +32,11 @@ class RegisterController extends Controller
 
         //create user
         $user = User::create([
-            'email'     => $request->email,
             'name'      => $request->name,
-            'password'  => bcrypt($request->password)
-        ]);
+            'email'     => $request->email,
+            'password'  => bcrypt($request->password),
+            'role'  => $request->role
+        ]); 
 
         //return response JSON user is created
         if($user) {

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ResepController;
 use App\Http\Controllers\ResepsController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,5 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('list', [ResepController::class, 'index']);
 
 // Route::get('/', [ResepsController::class, 'index']);

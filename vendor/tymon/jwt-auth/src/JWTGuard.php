@@ -74,7 +74,8 @@ class JWTGuard implements Guard
             return $this->user;
         }
 
-        if ($this->jwt->setRequest($this->request)->getToken() &&
+        if (
+            $this->jwt->setRequest($this->request)->getToken() &&
             ($payload = $this->jwt->check(true)) &&
             $this->validateSubject()
         ) {
@@ -91,7 +92,7 @@ class JWTGuard implements Guard
      */
     public function userOrFail()
     {
-        if (! $user = $this->user()) {
+        if (!$user = $this->user()) {
             throw new UserNotDefinedException;
         }
 
@@ -382,7 +383,7 @@ class JWTGuard implements Guard
     {
         // If the provider doesn't have the necessary method
         // to get the underlying model name then allow.
-        if (! method_exists($this->provider, 'getModel')) {
+        if (!method_exists($this->provider, 'getModel')) {
             return true;
         }
 
@@ -398,7 +399,7 @@ class JWTGuard implements Guard
      */
     protected function requireToken()
     {
-        if (! $this->jwt->setRequest($this->getRequest())->getToken()) {
+        if (!$this->jwt->setRequest($this->getRequest())->getToken()) {
             throw new JWTException('Token could not be parsed from the request.');
         }
 

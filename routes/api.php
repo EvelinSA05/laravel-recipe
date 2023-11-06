@@ -57,16 +57,30 @@ Route::post('/user', [UserController::class, 'store']);
 Route::delete('/user/{id}', [UserController::class, 'destroy']);
 Route::post('/user/{id}', [UserController::class, 'update']);
 
+// Route::post('/register', App\Http\Controllers\Api\RegisterController::class)->name('register');
+// Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
+// Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');
+
 Route::post('/register', App\Http\Controllers\Api\RegisterController::class)->name('register');
+
 Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
+Route::post('/loginuser', App\Http\Controllers\Api\LoginUserController::class)->name('loginuser');
+
 Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');
+
+Route::post('/me', [App\Http\Controllers\Api\LoginController::class, 'me']);
+
+
 
 // Route::post('/registerAdmin', App\Http\Controllers\Api\RegisterAdminController::class)->name('registerAdmin');
 // Route::post('/loginAdmin', App\Http\Controllers\Api\LoginAdminController::class)->name('loginAdmin');
 
 Route::post('/registerAdmin', [AdminController::class, 'register']);
 Route::post('/loginAdmin', [AdminController::class, 'login']);
+Route::get('/logoutAdmin', [AdminController::class, 'logout']);
 Route::get('/admin', [AdminController::class, 'index']);
+Route::get('/admin/{id}', [AdminController::class, 'show']);
+
 
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -86,6 +100,13 @@ Route::get('/admin/session', function (Request $request) {
     return response()->json(['name' => $admin->name]);
 });
 
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
+});
 
 // Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
 //     Route::get('/loginAdmin', [AdminAuthController::class, 'getLogin'])->name('adminLogin');
