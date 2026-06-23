@@ -22,3 +22,7 @@ Route::get('/', function () {
 Route::get('list', [ResepController::class, 'index']);
 
 // Route::get('/', [ResepsController::class, 'index']);
+
+// Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Contracts\Providers\Auth;
 
 class LoginController extends Controller
 {
@@ -18,6 +19,15 @@ class LoginController extends Controller
      */
     public function __invoke(Request $request)
     {
+        // $credentials = $request->only('email', 'password');
+        // if (Auth::attempt($credentials) && $request->otp == $users->otp) {
+        //     // Login berhasil
+        //     return redirect()->intended('dashboard');
+        // } else {
+        //     // Login gagal
+        //     return redirect('login')->withErrors('Invalid credentials');
+        // }
+
         //set validation
         $validator = Validator::make($request->all(), [
             'email'     => 'required',

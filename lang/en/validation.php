@@ -160,4 +160,10 @@ return [
 
     'attributes' => [],
 
+    'custom' => [
+        // 'title' => [
+        //     'alpha' => 'Judul harus berisi huruf.',
+        // ],
+    ],
+
 ];

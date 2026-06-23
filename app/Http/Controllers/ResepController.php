@@ -89,7 +89,7 @@ class ResepController extends Controller
         //define validation rules
         $validator = Validator::make($request->all(), [
             'image'     => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'title'     => 'required',
+            'title'     =>'required',
             'ingredients'   => 'required',
             'step' => 'required',
             'name' => 'required',

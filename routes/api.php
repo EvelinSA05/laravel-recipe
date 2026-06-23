@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HistoryController;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\LikeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,11 +20,6 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-// Route::group(function(){
-//     Route::get('reseps', ResepsController::class);
-// });
-
 
 Route::get('/reseps', [ResepController::class, 'index']);
 Route::get('/reseps/search', [ResepController::class, 'search']);
@@ -57,23 +53,12 @@ Route::post('/user', [UserController::class, 'store']);
 Route::delete('/user/{id}', [UserController::class, 'destroy']);
 Route::post('/user/{id}', [UserController::class, 'update']);
 
-// Route::post('/register', App\Http\Controllers\Api\RegisterController::class)->name('register');
-// Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
-// Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');
-
-Route::post('/register', App\Http\Controllers\Api\RegisterController::class)->name('register');
+Route::post('/registerl', App\Http\Controllers\Api\RegisterController::class)->name('register');
 
 Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
 Route::post('/loginuser', App\Http\Controllers\Api\LoginUserController::class)->name('loginuser');
 
 Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');
-
-Route::post('/me', [App\Http\Controllers\Api\LoginController::class, 'me']);
-
-
-
-// Route::post('/registerAdmin', App\Http\Controllers\Api\RegisterAdminController::class)->name('registerAdmin');
-// Route::post('/loginAdmin', App\Http\Controllers\Api\LoginAdminController::class)->name('loginAdmin');
 
 Route::post('/registerAdmin', [AdminController::class, 'register']);
 Route::post('/loginAdmin', [AdminController::class, 'login']);
@@ -81,46 +66,21 @@ Route::get('/logoutAdmin', [AdminController::class, 'logout']);
 Route::get('/admin', [AdminController::class, 'index']);
 Route::get('/admin/{id}', [AdminController::class, 'show']);
 
-
-
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::get('/indexlike', [LikeController::class, 'indexLike']);
+Route::post('/checklike', [LikeController::class, 'checkLike']);
+Route::post('/like', [LikeController::class, 'like']);
+Route::post('/unlike', [LikeController::class, 'unlike']);
+Route::get('/tes', [LikeController::class, 'tes']);
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-// Route::middleware('auth:api')->get('/admin', function (Request $request) {
-//     return $request->user();
-// });
 
 Route::get('/admin/session', function (Request $request) {
     $admin = $request->session()->get('admin');
     return response()->json(['name' => $admin->name]);
 });
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-// Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
-//     Route::get('/loginAdmin', [AdminAuthController::class, 'getLogin'])->name('adminLogin');
-//     Route::post('/loginAdmin', [AdminAuthController::class, 'postLogin'])->name('adminLoginPost');
- 
-//     Route::group(['middleware' => 'adminauth'], function () {
-//         Route::get('/', function () {
-//             return view('welcome');
-//         })->name('DashboardAdmin');
- 
-//     });
-// });
-
-// Route::prefix('admin')->group(function () {
-//     Route::post('register', 'AdminController@register');
-//     Route::post('login', 'AdminController@login');
-// });
