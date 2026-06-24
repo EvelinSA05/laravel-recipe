@@ -48,10 +48,10 @@ Route::post('/admin', [AdminController::class, 'store']);
 Route::delete('/admin/{id}', [AdminController::class, 'destroy']);
 Route::post('/admin/{id}', [AdminController::class, 'update']);
 
-Route::get('/user', [UserController::class, 'index']);
-Route::post('/user', [UserController::class, 'store']);
-Route::delete('/user/{id}', [UserController::class, 'destroy']);
-Route::post('/user/{id}', [UserController::class, 'update']);
+Route::get('/users', [UserController::class, 'index']);
+Route::post('/users', [UserController::class, 'store']);
+Route::delete('/users/{id}', [UserController::class, 'destroy']);
+Route::post('/users/{id}', [UserController::class, 'update']);
 
 Route::post('/registerl', App\Http\Controllers\Api\RegisterController::class)->name('register');
 
