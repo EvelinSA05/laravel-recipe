@@ -26,7 +26,7 @@ class Resep extends Model
     protected function image(): Attribute
     {
         return Attribute::make(
-            get: fn ($image) => asset('/storage/public/posts/' . $image),
+            get: fn ($image) => filter_var($image, FILTER_VALIDATE_URL) ? $image : asset('/storage/public/posts/' . $image),
         );
     }
 }
